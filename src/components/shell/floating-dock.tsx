@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Search, Plus, Moon, Sun, Settings, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -20,6 +21,7 @@ export function FloatingDock({
   onHelpClick,
   className,
 }: FloatingDockProps) {
+  const pathname = usePathname();
   const { setTheme, resolvedTheme } = useTheme();
   const mounted = React.useSyncExternalStore(
     () => () => {},
@@ -32,6 +34,8 @@ export function FloatingDock({
   };
 
   const isDark = mounted && resolvedTheme === "dark";
+
+  if (pathname?.startsWith("/i/")) return null;
 
   return (
     <aside

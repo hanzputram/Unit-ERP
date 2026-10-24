@@ -63,11 +63,11 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 export function AreaChart({ data, height = 240, className }: AreaChartProps) {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   return (
     <div

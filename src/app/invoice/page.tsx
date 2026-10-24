@@ -14,75 +14,7 @@ import {
   Printer,
 } from "lucide-react";
 import { toast } from "sonner";
-
-interface InvoiceItem {
-  id: string;
-  number: string;
-  guestName: string;
-  phone: string;
-  unitCode: string;
-  unitType: string;
-  issueDate: string;
-  dueDate: string;
-  total: number;
-  paid: number;
-  status: "PAID" | "PARTIAL" | "OVERDUE" | "SENT" | "DRAFT";
-}
-
-const MOCK_INVOICES: InvoiceItem[] = [
-  {
-    id: "inv-1",
-    number: "INV/SKY/202610/0001",
-    guestName: "Andi Pratama",
-    phone: "+6281234567890",
-    unitCode: "A-0803",
-    unitType: "Studio",
-    issueDate: "24 Okt 2026",
-    dueDate: "27 Okt 2026",
-    total: 4930000,
-    paid: 1500000,
-    status: "PARTIAL",
-  },
-  {
-    id: "inv-2",
-    number: "INV/SKY/202610/0002",
-    guestName: "Rina Melati",
-    phone: "+6281398765432",
-    unitCode: "B-0302",
-    unitType: "2 BR",
-    issueDate: "01 Okt 2026",
-    dueDate: "05 Okt 2026",
-    total: 17000000,
-    paid: 17000000,
-    status: "PAID",
-  },
-  {
-    id: "inv-3",
-    number: "INV/SKY/202610/0003",
-    guestName: "Bambang Santoso",
-    phone: "+6281122334455",
-    unitCode: "A-0404",
-    unitType: "Studio",
-    issueDate: "18 Okt 2026",
-    dueDate: "21 Okt 2026",
-    total: 3430000,
-    paid: 0,
-    status: "OVERDUE",
-  },
-  {
-    id: "inv-4",
-    number: "INV/SKY/202610/0004",
-    guestName: "Jessica Lee",
-    phone: "+6281766554433",
-    unitCode: "A-0402",
-    unitType: "1 BR",
-    issueDate: "20 Okt 2026",
-    dueDate: "23 Okt 2026",
-    total: 3900000,
-    paid: 3900000,
-    status: "PAID",
-  },
-];
+import { MOCK_INVOICES, type InvoiceItem } from "@/lib/data/invoices";
 
 export default function InvoicePage() {
   const [selectedInvoice, setSelectedInvoice] = React.useState<InvoiceItem | null>(null);
@@ -104,10 +36,28 @@ export default function InvoicePage() {
 
   const generateWhatsAppLink = (inv: InvoiceItem) => {
     const sisa = formatRupiah(inv.total - inv.paid);
-    const text = encodeURIComponent(
-      `Halo ${inv.guestName} 👋\nBerikut invoice ${inv.number} dari Skyline Residence:\n• Unit ${inv.unitCode}\n• Total ${formatRupiah(inv.total)} · Sisa ${sisa}\n• Jatuh tempo: ${inv.dueDate}\nLihat & unduh: http://localhost:3000/i/${inv.id}\nTerima kasih 🙏`
-    );
-    return `https://wa.me/${inv.phone}?text=${text}`;
+    const origin =
+      typeof window !== "undefined" && window.location.origin
+        ? window.location.origin
+        : "http://localhost:3000";
+    const cleanPhone = inv.phone.replace(/[^0-9]/g, "");
+
+    const message = [
+      `Halo ${inv.guestName},`,
+      ``,
+      `Berikut invoice tagihan ${inv.number} dari Skyline Residence:`,
+      `• Unit: ${inv.unitCode} (${inv.unitType})`,
+      `• Total: ${formatRupiah(inv.total)}`,
+      `• Sisa Tagihan: ${sisa}`,
+      `• Jatuh Tempo: ${inv.dueDate}`,
+      ``,
+      `Lihat rincian & unduh invoice:`,
+      `${origin}/i/${inv.id}`,
+      ``,
+      `Terima kasih.`,
+    ].join("\n");
+
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
   };
 
   return (

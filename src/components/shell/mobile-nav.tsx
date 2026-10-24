@@ -38,12 +38,7 @@ export function MobileNav() {
   );
   const isDark = mounted && resolvedTheme === "dark";
 
-  // Close drawer when pathname changes
-  const [prevPathname, setPrevPathname] = React.useState(pathname);
-  if (prevPathname !== pathname) {
-    setPrevPathname(pathname);
-    setDrawerOpen(false);
-  }
+  if (pathname?.startsWith("/i/")) return null;
 
   const openSearch = () => {
     setDrawerOpen(false);

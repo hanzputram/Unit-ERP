@@ -31,6 +31,8 @@ export function TopNav() {
   const pathname = usePathname();
   const [hoveredHref, setHoveredHref] = React.useState<string | null>(null);
 
+  if (pathname?.startsWith("/i/")) return null;
+
   return (
     <header className="sticky top-3 z-40 w-full px-4 md:px-8 max-w-[1440px] mx-auto pointer-events-none">
       <div className="flex items-center justify-between gap-4">
