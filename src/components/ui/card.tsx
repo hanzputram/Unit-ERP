@@ -30,7 +30,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
           ...style,
         }}
         className={cn(
-          "relative rounded-[var(--r-lg)] border p-5 md:p-6 transition-all duration-200",
+          "relative rounded-[var(--r-lg)] border p-4 sm:p-5 md:p-6 transition-all duration-200",
           toneClasses[tone],
           className
         )}
@@ -67,22 +67,22 @@ export function CardHeader({
       )}
       {...props}
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2.5 min-w-0">
         {icon && (
           <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--surface-2)] text-[var(--ink)] shrink-0">
             {icon}
           </div>
         )}
-        <div>
-          <h3 className="text-sm font-medium tracking-tight text-inherit">
+        <div className="min-w-0">
+          <h3 className="text-sm font-medium tracking-tight text-inherit truncate">
             {title}
           </h3>
           {subtitle && (
-            <p className="text-xs text-[var(--muted)]">{subtitle}</p>
+            <p className="text-xs text-[var(--muted)] truncate">{subtitle}</p>
           )}
         </div>
       </div>
-      {action && <div className="flex items-center gap-1.5">{action}</div>}
+      {action && <div className="flex items-center gap-1.5 shrink-0">{action}</div>}
     </div>
   );
 }

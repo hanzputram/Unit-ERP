@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Bell, Building2 } from "lucide-react";
+import { Bell, Building2, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { spring } from "@/lib/motion";
 import { NavBadge } from "@/components/ui/chip";
@@ -106,7 +106,22 @@ export function TopNav() {
         </nav>
 
         {/* Right: Notification Bell & Profile Avatar */}
-        <div className="flex items-center gap-2.5 pointer-events-auto">
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Quick Search on mobile */}
+          <IconButton
+            size="md"
+            variant="solid"
+            aria-label="Cari"
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent("staydesk:open-command-palette")
+              )
+            }
+            className="md:hidden"
+          >
+            <Search className="h-4 w-4" />
+          </IconButton>
+
           {/* Notification Button with unread dot */}
           <div className="relative">
             <IconButton

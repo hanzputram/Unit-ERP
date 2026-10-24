@@ -140,7 +140,7 @@ export default function TamuPage() {
 
       <Card className="p-0 overflow-hidden">
         {/* Search header */}
-        <div className="p-4 border-b border-[var(--line)] bg-[var(--surface)] flex items-center justify-between gap-4">
+        <div className="p-3 sm:p-4 border-b border-[var(--line)] bg-[var(--surface)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div className="w-full max-w-sm">
             <Input
               placeholder="Cari nama, telepon, atau email tamu..."
@@ -155,71 +155,143 @@ export default function TamuPage() {
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama Tamu</TableHead>
-              <TableHead>Kontak</TableHead>
-              <TableHead>Verifikasi ID</TableHead>
-              <TableHead>Kunjungan</TableHead>
-              <TableHead>Terakhir Menginap</TableHead>
-              <TableHead>Tag</TableHead>
-              <TableHead align="right">Total Belanja</TableHead>
-              <TableHead align="right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredGuests.map((g) => (
-              <TableRow
+        {/* Desktop Table (hidden on mobile) */}
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nama Tamu</TableHead>
+                <TableHead>Kontak</TableHead>
+                <TableHead>Verifikasi ID</TableHead>
+                <TableHead>Kunjungan</TableHead>
+                <TableHead>Terakhir Menginap</TableHead>
+                <TableHead>Tag</TableHead>
+                <TableHead align="right">Total Belanja</TableHead>
+                <TableHead align="right">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredGuests.map((g) => (
+                <TableRow
+                  key={g.id}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedGuest(g)}
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 rounded-full bg-[var(--blue-soft)] text-[var(--blue)] flex items-center justify-center font-bold text-xs shrink-0">
+                        {g.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <span className="font-semibold text-[var(--ink)]">
+                        {g.name}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-xs text-[var(--ink)]">{g.phone}</div>
+                    <div className="text-[11px] text-[var(--muted)]">{g.email}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--muted)]">
+                      <ShieldCheck className="h-3.5 w-3.5 text-[var(--green)]" />
+                      <span>{g.idType} ••••{g.idLast4}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="tabular">
+                    {g.staysCount} kali menginap
+                  </TableCell>
+                  <TableCell>{g.lastStay}</TableCell>
+                  <TableCell>
+                    {g.tag === "VIP" && <Chip variant="amber" size="sm">VIP</Chip>}
+                    {g.tag === "LANGGANAN" && <Chip variant="blue" size="sm">Langganan</Chip>}
+                    {g.tag === "REGULER" && <Chip variant="default" size="sm">Reguler</Chip>}
+                  </TableCell>
+                  <TableCell align="right" className="font-semibold tabular">
+                    {formatRupiah(g.totalSpent)}
+                  </TableCell>
+                  <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setSelectedGuest(g)}
+                    >
+                      Profil ›
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Card List (visible on mobile only) */}
+        <div className="divide-y divide-[var(--line)] md:hidden">
+          {filteredGuests.length === 0 ? (
+            <div className="p-8 text-center text-xs text-[var(--muted)]">
+              Tidak ada tamu yang cocok.
+            </div>
+          ) : (
+            filteredGuests.map((g) => (
+              <div
                 key={g.id}
-                className="cursor-pointer"
                 onClick={() => setSelectedGuest(g)}
+                className="p-4 space-y-2.5 active:bg-[var(--surface-2)] transition-colors cursor-pointer"
               >
-                <TableCell>
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-full bg-[var(--blue-soft)] text-[var(--blue)] flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="h-9 w-9 rounded-full bg-[var(--blue-soft)] text-[var(--blue)] flex items-center justify-center font-bold text-xs shrink-0">
                       {g.name.slice(0, 2).toUpperCase()}
                     </div>
-                    <span className="font-semibold text-[var(--ink)]">
-                      {g.name}
-                    </span>
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--ink)]">
+                        {g.name}
+                      </div>
+                      <div className="text-[11px] text-[var(--muted)] flex items-center gap-1">
+                        <ShieldCheck className="h-3 w-3 text-[var(--green)]" />
+                        <span>{g.idType} ••••{g.idLast4}</span>
+                      </div>
+                    </div>
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div className="text-xs text-[var(--ink)]">{g.phone}</div>
-                  <div className="text-[11px] text-[var(--muted)]">{g.email}</div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1.5 text-xs text-[var(--muted)]">
-                    <ShieldCheck className="h-3.5 w-3.5 text-[var(--green)]" />
-                    <span>{g.idType} ••••{g.idLast4}</span>
+                  <div>
+                    {g.tag === "VIP" && <Chip variant="amber" size="sm">VIP</Chip>}
+                    {g.tag === "LANGGANAN" && <Chip variant="blue" size="sm">Langganan</Chip>}
+                    {g.tag === "REGULER" && <Chip variant="default" size="sm">Reguler</Chip>}
                   </div>
-                </TableCell>
-                <TableCell className="tabular">
-                  {g.staysCount} kali menginap
-                </TableCell>
-                <TableCell>{g.lastStay}</TableCell>
-                <TableCell>
-                  {g.tag === "VIP" && <Chip variant="amber" size="sm">VIP</Chip>}
-                  {g.tag === "LANGGANAN" && <Chip variant="blue" size="sm">Langganan</Chip>}
-                  {g.tag === "REGULER" && <Chip variant="default" size="sm">Reguler</Chip>}
-                </TableCell>
-                <TableCell align="right" className="font-semibold tabular">
-                  {formatRupiah(g.totalSpent)}
-                </TableCell>
-                <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setSelectedGuest(g)}
+                </div>
+
+                <div className="text-xs text-[var(--ink-2)] flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+                  <a
+                    href={`tel:${g.phone}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 text-[var(--blue)] hover:underline"
                   >
-                    Profil ›
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                    <Phone className="h-3 w-3" />
+                    <span>{g.phone}</span>
+                  </a>
+                  <a
+                    href={`mailto:${g.email}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 text-[var(--muted)] hover:text-[var(--ink)]"
+                  >
+                    <Mail className="h-3 w-3" />
+                    <span className="truncate max-w-[170px]">{g.email}</span>
+                  </a>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--line)] text-xs">
+                  <div>
+                    <span className="text-[var(--muted)]">{g.staysCount}x menginap</span>
+                    <span className="mx-1.5 text-[var(--line)]">·</span>
+                    <span className="text-[var(--muted)]">{g.lastStay}</span>
+                  </div>
+                  <div className="font-bold text-[var(--ink)] tabular">
+                    {formatRupiah(g.totalSpent)}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </Card>
 
       {/* Guest Profile Sheet */}

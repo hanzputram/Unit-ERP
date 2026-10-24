@@ -145,7 +145,7 @@ export default function LaporanPage() {
           {/* Area Chart & Gauge */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
             <Card className="lg:col-span-8 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                 <div>
                   <h3 className="text-base font-semibold text-[var(--ink)]">
                     Perjalanan Pendapatan Bulanan
@@ -177,44 +177,89 @@ export default function LaporanPage() {
                 Peringkat Kinerja Unit Terbaik (Top Performer)
               </h3>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Unit</TableHead>
-                  <TableHead>Tipe</TableHead>
-                  <TableHead>Okupansi</TableHead>
-                  <TableHead>Malam Terjual</TableHead>
-                  <TableHead>ADR</TableHead>
-                  <TableHead>Pendapatan</TableHead>
-                  <TableHead>Biaya</TableHead>
-                  <TableHead align="right">Laba Bersih</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {unitPerformances.map((u) => (
-                  <TableRow key={u.code}>
-                    <TableCell className="font-semibold text-[var(--blue)]">
-                      {u.code}
-                    </TableCell>
-                    <TableCell>{u.type}</TableCell>
-                    <TableCell className="font-medium text-[var(--green)]">
-                      {u.occ}
-                    </TableCell>
-                    <TableCell className="tabular">{u.nights} mlm</TableCell>
-                    <TableCell className="tabular">{u.adr}</TableCell>
-                    <TableCell className="tabular font-medium">
-                      {formatRupiahCompact(u.revenue)}
-                    </TableCell>
-                    <TableCell className="tabular text-[var(--muted)]">
-                      {formatRupiahCompact(u.cost)}
-                    </TableCell>
-                    <TableCell align="right" className="font-bold text-[var(--green)] tabular">
-                      {formatRupiahCompact(u.profit)}
-                    </TableCell>
+            {/* Desktop Table */}
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Unit</TableHead>
+                    <TableHead>Tipe</TableHead>
+                    <TableHead>Okupansi</TableHead>
+                    <TableHead>Malam Terjual</TableHead>
+                    <TableHead>ADR</TableHead>
+                    <TableHead>Pendapatan</TableHead>
+                    <TableHead>Biaya</TableHead>
+                    <TableHead align="right">Laba Bersih</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {unitPerformances.map((u) => (
+                    <TableRow key={u.code}>
+                      <TableCell className="font-semibold text-[var(--blue)]">
+                        {u.code}
+                      </TableCell>
+                      <TableCell>{u.type}</TableCell>
+                      <TableCell className="font-medium text-[var(--green)]">
+                        {u.occ}
+                      </TableCell>
+                      <TableCell className="tabular">{u.nights} mlm</TableCell>
+                      <TableCell className="tabular">{u.adr}</TableCell>
+                      <TableCell className="tabular font-medium">
+                        {formatRupiahCompact(u.revenue)}
+                      </TableCell>
+                      <TableCell className="tabular text-[var(--muted)]">
+                        {formatRupiahCompact(u.cost)}
+                      </TableCell>
+                      <TableCell align="right" className="font-bold text-[var(--green)] tabular">
+                        {formatRupiahCompact(u.profit)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Card List */}
+            <div className="divide-y divide-[var(--line)] md:hidden">
+              {unitPerformances.map((u, idx) => (
+                <div key={u.code} className="p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 text-xs font-bold text-[var(--muted)]">
+                        #{idx + 1}
+                      </span>
+                      <span className="font-bold text-sm text-[var(--blue)]">
+                        {u.code}
+                      </span>
+                      <span className="text-xs text-[var(--muted)]">({u.type})</span>
+                    </div>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--green-soft)] text-[var(--green)]">
+                      {u.occ} okupansi
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs text-[var(--ink-2)]">
+                    <span>{u.nights} malam terjual</span>
+                    <span>ADR: <strong className="text-[var(--ink)]">{u.adr}</strong></span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-[var(--line)] text-xs">
+                    <div>
+                      <span className="text-[var(--muted)]">Omset: </span>
+                      <span className="font-semibold tabular text-[var(--ink)]">
+                        {formatRupiahCompact(u.revenue)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[var(--muted)]">Laba: </span>
+                      <span className="font-bold tabular text-[var(--green)]">
+                        {formatRupiahCompact(u.profit)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
       )}

@@ -170,7 +170,7 @@ export default function KeuanganPage() {
 
           {/* Area Chart 12 Bulan */}
           <Card className="flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
               <div>
                 <h3 className="text-base font-semibold text-[var(--ink)]">
                   Tren Keuangan 12 Bulan
@@ -179,7 +179,7 @@ export default function KeuanganPage() {
                   Perbandingan pendapatan vs pengeluaran operasional
                 </p>
               </div>
-              <div className="flex items-center gap-3 text-xs text-[var(--muted)]">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--muted)]">
                 <span className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[var(--blue)]" />
                   Pendapatan
@@ -198,37 +198,82 @@ export default function KeuanganPage() {
       {/* Tab 2: Pembayaran */}
       {tab === "pembayaran" && (
         <Card className="p-0 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>No. Kwitansi</TableHead>
-                <TableHead>Waktu Bayar</TableHead>
-                <TableHead>Tamu & Booking</TableHead>
-                <TableHead>Metode</TableHead>
-                <TableHead>Referensi</TableHead>
-                <TableHead align="right">Nominal</TableHead>
-                <TableHead align="right">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {payments.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-semibold text-[var(--blue)]">
-                    {p.kwt}
-                  </TableCell>
-                  <TableCell>{p.date}</TableCell>
-                  <TableCell>
-                    <div className="font-medium text-[var(--ink)]">{p.guest}</div>
-                    <div className="text-xs text-[var(--muted)]">{p.booking}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Chip variant="default" size="sm">{p.method}</Chip>
-                  </TableCell>
-                  <TableCell className="text-xs text-[var(--muted)]">{p.ref}</TableCell>
-                  <TableCell align="right" className="font-bold text-[var(--green)] tabular">
-                    {formatRupiah(p.amount)}
-                  </TableCell>
-                  <TableCell align="right">
+          {/* Desktop Table (hidden on mobile) */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>No. Kwitansi</TableHead>
+                  <TableHead>Waktu Bayar</TableHead>
+                  <TableHead>Tamu & Booking</TableHead>
+                  <TableHead>Metode</TableHead>
+                  <TableHead>Referensi</TableHead>
+                  <TableHead align="right">Nominal</TableHead>
+                  <TableHead align="right">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payments.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-semibold text-[var(--blue)]">
+                      {p.kwt}
+                    </TableCell>
+                    <TableCell>{p.date}</TableCell>
+                    <TableCell>
+                      <div className="font-medium text-[var(--ink)]">{p.guest}</div>
+                      <div className="text-xs text-[var(--muted)]">{p.booking}</div>
+                    </TableCell>
+                    <TableCell>
+                      <Chip variant="default" size="sm">{p.method}</Chip>
+                    </TableCell>
+                    <TableCell className="text-xs text-[var(--muted)]">{p.ref}</TableCell>
+                    <TableCell align="right" className="font-bold text-[var(--green)] tabular">
+                      {formatRupiah(p.amount)}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => toast.success(`Mencetak kwitansi ${p.kwt}`)}
+                      >
+                        Kwitansi ›
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card List (visible on mobile only) */}
+          <div className="divide-y divide-[var(--line)] md:hidden">
+            {payments.map((p) => (
+              <div key={p.id} className="p-4 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-semibold text-sm text-[var(--ink)]">
+                      {p.guest}
+                    </div>
+                    <div className="text-[11px] font-mono text-[var(--blue)]">
+                      {p.kwt}
+                    </div>
+                  </div>
+                  <Chip variant="default" size="sm">{p.method}</Chip>
+                </div>
+
+                <div className="text-xs text-[var(--muted)] flex items-center justify-between">
+                  <span>{p.booking}</span>
+                  <span>{p.date}</span>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--line)]">
+                  <div className="text-xs text-[var(--muted)]">
+                    Ref: <span className="font-mono">{p.ref}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-[var(--green)] tabular">
+                      {formatRupiah(p.amount)}
+                    </span>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -236,55 +281,81 @@ export default function KeuanganPage() {
                     >
                       Kwitansi ›
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       )}
 
       {/* Tab 3: Pengeluaran */}
       {tab === "pengeluaran" && (
         <Card className="p-0 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead>Vendor</TableHead>
-                <TableHead>Deskripsi</TableHead>
-                <TableHead align="right">Jumlah</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {expenses.map((x) => (
-                <TableRow key={x.id}>
-                  <TableCell>{x.date}</TableCell>
-                  <TableCell>
-                    <Chip variant="amber" size="sm">{x.category}</Chip>
-                  </TableCell>
-                  <TableCell className="font-medium">{x.vendor}</TableCell>
-                  <TableCell className="text-xs text-[var(--muted)]">{x.desc}</TableCell>
-                  <TableCell align="right" className="font-semibold text-[var(--red)] tabular">
-                    -{formatRupiah(x.amount)}
-                  </TableCell>
+          {/* Desktop Table (hidden on mobile) */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tanggal</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Vendor</TableHead>
+                  <TableHead>Deskripsi</TableHead>
+                  <TableHead align="right">Jumlah</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {expenses.map((x) => (
+                  <TableRow key={x.id}>
+                    <TableCell>{x.date}</TableCell>
+                    <TableCell>
+                      <Chip variant="amber" size="sm">{x.category}</Chip>
+                    </TableCell>
+                    <TableCell className="font-medium">{x.vendor}</TableCell>
+                    <TableCell className="text-xs text-[var(--muted)]">{x.desc}</TableCell>
+                    <TableCell align="right" className="font-semibold text-[var(--red)] tabular">
+                      -{formatRupiah(x.amount)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card List (visible on mobile only) */}
+          <div className="divide-y divide-[var(--line)] md:hidden">
+            {expenses.map((x) => (
+              <div key={x.id} className="p-4 space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-semibold text-sm text-[var(--ink)]">
+                    {x.vendor}
+                  </div>
+                  <Chip variant="amber" size="sm">{x.category}</Chip>
+                </div>
+
+                <p className="text-xs text-[var(--muted)]">{x.desc}</p>
+
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--line)] text-xs">
+                  <span className="text-[var(--muted)]">{x.date}</span>
+                  <span className="font-bold text-sm text-[var(--red)] tabular">
+                    -{formatRupiah(x.amount)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       )}
 
       {/* Tab 4: Deposit */}
       {tab === "deposit" && (
         <Card className="space-y-4">
-          <div className="p-4 rounded-2xl bg-[var(--surface-2)] flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-[var(--surface-2)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="text-xs text-[var(--muted)] font-semibold uppercase">
                 Total Deposit Ditahan (Liabilitas)
               </div>
-              <div className="text-3xl font-bold text-[var(--ink)] tabular mt-1">
+              <div className="text-2xl sm:text-3xl font-bold text-[var(--ink)] tabular mt-1">
                 Rp 48.500.000
               </div>
             </div>

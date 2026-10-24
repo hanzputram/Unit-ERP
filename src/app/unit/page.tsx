@@ -139,72 +139,130 @@ export default function UnitPage() {
       {/* Tab 2: Daftar Unit */}
       {activeTab === "daftar" && (
         <Card className="p-0 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Kode Unit</TableHead>
-                <TableHead>Gedung & Lantai</TableHead>
-                <TableHead>Tipe</TableHead>
-                <TableHead>Tarif Harian</TableHead>
-                <TableHead>Tarif Mingguan</TableHead>
-                <TableHead>Tarif Bulanan</TableHead>
-                <TableHead>Status Operasional</TableHead>
-                <TableHead align="right">Omset Bln Ini</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[...unitsTowerA, ...unitsTowerB].map((u) => (
-                <TableRow
-                  key={u.id}
-                  className="cursor-pointer"
-                  onClick={() => setSelectedUnit(u)}
-                >
-                  <TableCell className="font-semibold text-[var(--blue)]">
-                    {u.code}
-                  </TableCell>
-                  <TableCell>
-                    {u.code.startsWith("A") ? "Tower A" : "Tower B"} · Lantai {u.floor}
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium">{u.type}</span>
-                  </TableCell>
-                  <TableCell className="tabular">
-                    {u.type === "Studio" && "Rp 450.000"}
-                    {u.type === "1 BR" && "Rp 650.000"}
-                    {u.type === "2 BR" && "Rp 950.000"}
-                  </TableCell>
-                  <TableCell className="tabular">
-                    {u.type === "Studio" && "Rp 2.600.000"}
-                    {u.type === "1 BR" && "Rp 3.900.000"}
-                    {u.type === "2 BR" && "Rp 5.600.000"}
-                  </TableCell>
-                  <TableCell className="tabular">
-                    {u.type === "Studio" && "Rp 8.000.000"}
-                    {u.type === "1 BR" && "Rp 11.500.000"}
-                    {u.type === "2 BR" && "Rp 17.000.000"}
-                  </TableCell>
-                  <TableCell>
-                    {u.status === "OCCUPIED" && <Chip variant="blue" dot>Terisi</Chip>}
-                    {u.status === "VACANT" && <Chip variant="default" dot>Kosong</Chip>}
-                    {u.status === "ARRIVING" && <Chip variant="amber" dot>Tiba Hari Ini</Chip>}
-                    {u.status === "CLEANING" && <Chip variant="orange" dot>Dibersihkan</Chip>}
-                    {u.status === "BLOCKED" && <Chip variant="red" dot>Diblokir</Chip>}
-                  </TableCell>
-                  <TableCell align="right" className="font-semibold tabular">
-                    {formatRupiahCompact(u.revenueThisMonth || 0)}
-                  </TableCell>
+          {/* Desktop Table (hidden on mobile) */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Kode Unit</TableHead>
+                  <TableHead>Gedung & Lantai</TableHead>
+                  <TableHead>Tipe</TableHead>
+                  <TableHead>Tarif Harian</TableHead>
+                  <TableHead>Tarif Mingguan</TableHead>
+                  <TableHead>Tarif Bulanan</TableHead>
+                  <TableHead>Status Operasional</TableHead>
+                  <TableHead align="right">Omset Bln Ini</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {[...unitsTowerA, ...unitsTowerB].map((u) => (
+                  <TableRow
+                    key={u.id}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedUnit(u)}
+                  >
+                    <TableCell className="font-semibold text-[var(--blue)]">
+                      {u.code}
+                    </TableCell>
+                    <TableCell>
+                      {u.code.startsWith("A") ? "Tower A" : "Tower B"} · Lantai {u.floor}
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium">{u.type}</span>
+                    </TableCell>
+                    <TableCell className="tabular">
+                      {u.type === "Studio" && "Rp 450.000"}
+                      {u.type === "1 BR" && "Rp 650.000"}
+                      {u.type === "2 BR" && "Rp 950.000"}
+                    </TableCell>
+                    <TableCell className="tabular">
+                      {u.type === "Studio" && "Rp 2.600.000"}
+                      {u.type === "1 BR" && "Rp 3.900.000"}
+                      {u.type === "2 BR" && "Rp 5.600.000"}
+                    </TableCell>
+                    <TableCell className="tabular">
+                      {u.type === "Studio" && "Rp 8.000.000"}
+                      {u.type === "1 BR" && "Rp 11.500.000"}
+                      {u.type === "2 BR" && "Rp 17.000.000"}
+                    </TableCell>
+                    <TableCell>
+                      {u.status === "OCCUPIED" && <Chip variant="blue" dot>Terisi</Chip>}
+                      {u.status === "VACANT" && <Chip variant="default" dot>Kosong</Chip>}
+                      {u.status === "ARRIVING" && <Chip variant="amber" dot>Tiba Hari Ini</Chip>}
+                      {u.status === "CLEANING" && <Chip variant="orange" dot>Dibersihkan</Chip>}
+                      {u.status === "BLOCKED" && <Chip variant="red" dot>Diblokir</Chip>}
+                    </TableCell>
+                    <TableCell align="right" className="font-semibold tabular">
+                      {formatRupiahCompact(u.revenueThisMonth || 0)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card List (visible on mobile only) */}
+          <div className="divide-y divide-[var(--line)] md:hidden">
+            {[...unitsTowerA, ...unitsTowerB].map((u) => (
+              <div
+                key={u.id}
+                onClick={() => setSelectedUnit(u)}
+                className="p-4 space-y-2 active:bg-[var(--surface-2)] transition-colors cursor-pointer"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="font-bold text-base text-[var(--blue)]">
+                      {u.code}
+                    </div>
+                    <div className="text-xs text-[var(--muted)]">
+                      {u.code.startsWith("A") ? "Tower A" : "Tower B"} · Lantai {u.floor} · {u.type}
+                    </div>
+                  </div>
+                  <div>
+                    {u.status === "OCCUPIED" && <Chip variant="blue" size="sm" dot>Terisi</Chip>}
+                    {u.status === "VACANT" && <Chip variant="default" size="sm" dot>Kosong</Chip>}
+                    {u.status === "ARRIVING" && <Chip variant="amber" size="sm" dot>Tiba Hari Ini</Chip>}
+                    {u.status === "CLEANING" && <Chip variant="orange" size="sm" dot>Dibersihkan</Chip>}
+                    {u.status === "BLOCKED" && <Chip variant="red" size="sm" dot>Diblokir</Chip>}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs pt-1 text-[var(--ink-2)]">
+                  <span>
+                    Harian:{" "}
+                    <strong className="text-[var(--ink)] tabular">
+                      {u.type === "Studio" && "Rp 450rb"}
+                      {u.type === "1 BR" && "Rp 650rb"}
+                      {u.type === "2 BR" && "Rp 950rb"}
+                    </strong>
+                  </span>
+                  <span>
+                    Bulanan:{" "}
+                    <strong className="text-[var(--ink)] tabular">
+                      {u.type === "Studio" && "Rp 8 jt"}
+                      {u.type === "1 BR" && "Rp 11,5 jt"}
+                      {u.type === "2 BR" && "Rp 17 jt"}
+                    </strong>
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--line)] text-xs">
+                  <span className="text-[var(--muted)]">Omset bulan ini:</span>
+                  <span className="font-bold text-[var(--ink)] tabular">
+                    {formatRupiahCompact(u.revenueThisMonth || 0)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       )}
 
       {/* Tab 3: Housekeeping Kanban (§9.4.3) */}
       {activeTab === "housekeeping" && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="flex overflow-x-auto snap-x gap-4 pb-4 md:grid md:grid-cols-4 md:overflow-visible">
           {/* Kolom 1: Kotor */}
-          <Card className="space-y-3 bg-[var(--surface)]">
+          <Card className="space-y-3 bg-[var(--surface)] min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start flex-1">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
               <span className="text-xs font-semibold uppercase text-[var(--orange)]">
                 Kotor (Perlu Dibersihkan)
@@ -245,7 +303,7 @@ export default function UnitPage() {
           </Card>
 
           {/* Kolom 2: Dikerjakan */}
-          <Card className="space-y-3 bg-[var(--surface)]">
+          <Card className="space-y-3 bg-[var(--surface)] min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start flex-1">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
               <span className="text-xs font-semibold uppercase text-[var(--blue)]">
                 Sedang Dikerjakan
@@ -273,7 +331,7 @@ export default function UnitPage() {
           </Card>
 
           {/* Kolom 3: Perlu Cek / Inspeksi */}
-          <Card className="space-y-3 bg-[var(--surface)]">
+          <Card className="space-y-3 bg-[var(--surface)] min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start flex-1">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
               <span className="text-xs font-semibold uppercase text-[var(--amber)]">
                 Perlu Cek (Inspeksi)
@@ -301,7 +359,7 @@ export default function UnitPage() {
           </Card>
 
           {/* Kolom 4: Bersih (Siap Huni) */}
-          <Card className="space-y-3 bg-[var(--surface)]">
+          <Card className="space-y-3 bg-[var(--surface)] min-w-[280px] sm:min-w-[320px] md:min-w-0 snap-start flex-1">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
               <span className="text-xs font-semibold uppercase text-[var(--green)]">
                 Bersih & Siap Huni

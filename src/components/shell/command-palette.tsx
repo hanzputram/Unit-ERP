@@ -20,8 +20,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         onOpenChange(!open);
       }
     };
+    const openHandler = () => onOpenChange(true);
     document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    window.addEventListener("staydesk:open-command-palette", openHandler);
+    return () => {
+      document.removeEventListener("keydown", down);
+      window.removeEventListener("staydesk:open-command-palette", openHandler);
+    };
   }, [open, onOpenChange]);
 
   if (!open) return null;

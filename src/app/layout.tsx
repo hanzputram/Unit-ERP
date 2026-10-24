@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TopNav } from "@/components/shell/top-nav";
 import { FloatingDock } from "@/components/shell/floating-dock";
+import { MobileNav } from "@/components/shell/mobile-nav";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -33,11 +34,14 @@ export default function RootLayout({
           {/* Top Pill Navigation */}
           <TopNav />
 
-          {/* Floating Dock on Left */}
+          {/* Floating Dock on Left (Desktop) */}
           <FloatingDock />
 
-          {/* Main Content Area (padded on left for dock on wide screens) */}
-          <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 md:px-8 xl:pl-24 py-6">
+          {/* Bottom Nav Bar (Mobile) */}
+          <MobileNav />
+
+          {/* Main Content Area (padded for dock on desktop, padded on bottom for mobile nav) */}
+          <main className="flex-1 w-full max-w-[1440px] mx-auto px-3.5 sm:px-6 md:px-8 xl:pl-24 py-4 sm:py-6 pb-24 md:pb-8">
             {children}
           </main>
 

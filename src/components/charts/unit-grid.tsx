@@ -164,7 +164,7 @@ export function UnitGrid({
                     onMouseLeave={() => setHoveredUnit(null)}
                     onClick={() => onUnitClick?.(unit)}
                     className={cn(
-                      "h-6 w-6 rounded-[4px] border cursor-pointer transition-shadow shadow-xs relative flex items-center justify-center text-[9px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)]",
+                      "h-7 w-7 sm:h-6 sm:w-6 rounded-[5px] sm:rounded-[4px] border cursor-pointer transition-shadow shadow-xs relative flex items-center justify-center text-[9px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] active:scale-95",
                       getStatusClasses(unit.status)
                     )}
                     aria-label={`Unit ${unit.code}: ${unit.status}`}

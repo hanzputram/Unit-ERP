@@ -19,7 +19,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("flex items-center gap-1.5 text-xs text-[var(--muted)]", className)}
+      className={cn("flex items-center gap-1.5 text-xs text-[var(--muted)] max-w-full overflow-x-auto whitespace-nowrap scrollbar-none py-0.5", className)}
     >
       {items.map((item, idx) => {
         const isLast = idx === items.length - 1;

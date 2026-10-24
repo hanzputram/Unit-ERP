@@ -26,7 +26,7 @@ export function Sheet({
   children,
   footer,
   className,
-  width = "max-w-md md:max-w-[480px]",
+  width = "w-full sm:max-w-md md:max-w-[480px]",
 }: SheetProps) {
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,14 +50,14 @@ export function Sheet({
             onClick={onClose}
             className="fixed inset-0 bg-black/35 backdrop-blur-xs"
           />
-          <div className="fixed inset-y-0 right-0 flex pl-10">
+          <div className="fixed inset-y-0 right-0 flex pl-0 sm:pl-10 w-full justify-end pointer-events-none">
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={spring}
               className={cn(
-                "relative w-screen bg-[var(--surface-solid)] border-l border-[var(--line)] shadow-2xl flex flex-col justify-between p-6",
+                "relative w-full sm:w-auto bg-[var(--surface-solid)] border-l border-[var(--line)] shadow-2xl flex flex-col justify-between p-4 sm:p-6 pointer-events-auto h-full",
                 width,
                 className
               )}

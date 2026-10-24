@@ -27,7 +27,7 @@ export function SubChips<T extends string = string>({
   idPrefix = "subchip",
 }: SubChipsProps<T>) {
   return (
-    <div className={cn("inline-flex items-center gap-1.5", className)}>
+    <div className={cn("inline-flex items-center gap-1.5 max-w-full overflow-x-auto whitespace-nowrap scrollbar-none py-1 shrink-0", className)}>
       {items.map((item) => {
         const isActive = item.value === value;
         return (
@@ -36,7 +36,7 @@ export function SubChips<T extends string = string>({
             type="button"
             onClick={() => onChange(item.value)}
             className={cn(
-              "relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--r-pill)] text-[13px] font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)]",
+              "relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--r-pill)] text-[13px] font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] shrink-0 whitespace-nowrap",
               isActive
                 ? "text-[var(--ink)]"
                 : "text-[var(--muted)] hover:text-[var(--ink)]"

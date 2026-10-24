@@ -54,7 +54,7 @@ export function Dialog({
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-              "relative z-10 w-full max-w-lg rounded-[28px] bg-[var(--surface-solid)] p-6 md:p-8 shadow-2xl border border-[var(--line)]",
+              "relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[24px] sm:rounded-[28px] bg-[var(--surface-solid)] p-5 sm:p-7 md:p-8 shadow-2xl border border-[var(--line)]",
               className
             )}
           >

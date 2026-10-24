@@ -255,7 +255,7 @@ export default function BookingPage() {
       {viewMode === "daftar" ? (
         <Card className="p-0 overflow-hidden">
           {/* Search bar inside card */}
-          <div className="p-4 border-b border-[var(--line)] bg-[var(--surface)] flex items-center justify-between gap-4">
+          <div className="p-3 sm:p-4 border-b border-[var(--line)] bg-[var(--surface)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div className="w-full max-w-sm">
               <Input
                 placeholder="Cari kode booking, nama tamu, unit..."
@@ -270,57 +270,152 @@ export default function BookingPage() {
             </div>
           </div>
 
-          {/* Table */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Kode Booking</TableHead>
-                <TableHead>Tamu</TableHead>
-                <TableHead>Unit</TableHead>
-                <TableHead>Periode Menginap</TableHead>
-                <TableHead>Tipe</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Bayar</TableHead>
-                <TableHead align="right">Total</TableHead>
-                <TableHead align="right">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredBookings.map((b) => (
-                <TableRow
+          {/* Desktop Table (hidden on mobile) */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Kode Booking</TableHead>
+                  <TableHead>Tamu</TableHead>
+                  <TableHead>Unit</TableHead>
+                  <TableHead>Periode Menginap</TableHead>
+                  <TableHead>Tipe</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Bayar</TableHead>
+                  <TableHead align="right">Total</TableHead>
+                  <TableHead align="right">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredBookings.map((b) => (
+                  <TableRow
+                    key={b.id}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedBooking(b)}
+                  >
+                    <TableCell className="font-semibold text-[var(--blue)]">
+                      {b.code}
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium text-[var(--ink)]">{b.guestName}</div>
+                      <div className="text-xs text-[var(--muted)]">{b.phone}</div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium">{b.unitCode}</span>
+                      <span className="text-xs text-[var(--muted)] ml-1">
+                        ({b.unitType} · {b.building})
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-xs font-medium">
+                        {b.checkIn} → {b.checkOut}
+                      </div>
+                      <div className="text-[11px] text-[var(--muted)]">
+                        {b.nights} malam
+                      </div>
+                    </TableCell>
+                    <TableCell>{getRentalTypeChip(b.rentalType)}</TableCell>
+                    <TableCell>{getStatusChip(b.status)}</TableCell>
+                    <TableCell>{getPaymentChip(b.paymentStatus)}</TableCell>
+                    <TableCell align="right" className="font-semibold tabular">
+                      {formatRupiah(b.total)}
+                    </TableCell>
+                    <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1.5">
+                        {b.status === "CONFIRMED" && (
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            onClick={() => {
+                              toast.success(`Check-in dimulai untuk unit ${b.unitCode}`);
+                            }}
+                          >
+                            Check-in
+                          </Button>
+                        )}
+                        {b.status === "CHECKED_IN" && (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => {
+                              toast.info(`Inspeksi check-out untuk ${b.unitCode}`);
+                            }}
+                          >
+                            Check-out
+                          </Button>
+                        )}
+                        {b.status === "HOLD" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              toast.success(`Hold dikonfirmasi untuk ${b.unitCode}`);
+                            }}
+                          >
+                            Konfirmasi
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card List (visible on mobile only) */}
+          <div className="divide-y divide-[var(--line)] md:hidden">
+            {filteredBookings.length === 0 ? (
+              <div className="p-8 text-center text-xs text-[var(--muted)]">
+                Tidak ada booking yang cocok.
+              </div>
+            ) : (
+              filteredBookings.map((b) => (
+                <div
                   key={b.id}
-                  className="cursor-pointer"
                   onClick={() => setSelectedBooking(b)}
+                  className="p-4 space-y-2.5 active:bg-[var(--surface-2)] transition-colors cursor-pointer"
                 >
-                  <TableCell className="font-semibold text-[var(--blue)]">
-                    {b.code}
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium text-[var(--ink)]">{b.guestName}</div>
-                    <div className="text-xs text-[var(--muted)]">{b.phone}</div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium">{b.unitCode}</span>
-                    <span className="text-xs text-[var(--muted)] ml-1">
-                      ({b.unitType} · {b.building})
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-semibold text-sm text-[var(--ink)]">
+                        {b.guestName}
+                      </div>
+                      <div className="text-[11px] font-mono text-[var(--blue)]">
+                        {b.code}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {getStatusChip(b.status)}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--ink-2)]">
+                    <span className="font-semibold px-2 py-0.5 rounded-md bg-[var(--surface-2)] text-[var(--ink)]">
+                      Unit {b.unitCode} ({b.unitType})
                     </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-xs font-medium">
-                      {b.checkIn} → {b.checkOut}
+                    <span>•</span>
+                    <span>{b.building}</span>
+                    <span>•</span>
+                    {getRentalTypeChip(b.rentalType)}
+                  </div>
+
+                  <div className="text-xs text-[var(--muted)] flex items-center justify-between pt-1">
+                    <div>
+                      <span className="font-medium text-[var(--ink)]">{b.checkIn}</span> → <span>{b.checkOut}</span>
+                      <span className="ml-1 text-[11px]">({b.nights} malam)</span>
                     </div>
-                    <div className="text-[11px] text-[var(--muted)]">
-                      {b.nights} malam
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-[var(--line)]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold tabular text-[var(--ink)]">
+                        {formatRupiah(b.total)}
+                      </span>
+                      {getPaymentChip(b.paymentStatus)}
                     </div>
-                  </TableCell>
-                  <TableCell>{getRentalTypeChip(b.rentalType)}</TableCell>
-                  <TableCell>{getStatusChip(b.status)}</TableCell>
-                  <TableCell>{getPaymentChip(b.paymentStatus)}</TableCell>
-                  <TableCell align="right" className="font-semibold tabular">
-                    {formatRupiah(b.total)}
-                  </TableCell>
-                  <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center justify-end gap-1.5">
+
+                    <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                       {b.status === "CONFIRMED" && (
                         <Button
                           size="sm"
@@ -355,16 +450,16 @@ export default function BookingPage() {
                         </Button>
                       )}
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </Card>
       ) : (
         /* Calendar Gantt View §9.3.2 */
         <Card className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[var(--line)]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--line)]">
             <div>
               <h3 className="text-base font-semibold text-[var(--ink)]">
                 Timeline Hunian Unit (Gantt Chart)
@@ -373,7 +468,7 @@ export default function BookingPage() {
                 Visualisasi serah-terima unit dan kalender okupansi 14 hari
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button variant="secondary" size="sm">
                 ◀ Oktober 2026 ▶
               </Button>

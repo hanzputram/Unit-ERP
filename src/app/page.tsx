@@ -130,6 +130,18 @@ export default function DashboardPage() {
 
           <div className="my-2">
             <DayTimeline events={timelineEvents} currentTime="14:37" />
+            {/* Quick Mobile Event Cards (Touch accessible) */}
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 sm:hidden scrollbar-none">
+              {timelineEvents.map((evt) => (
+                <div
+                  key={evt.id}
+                  onClick={() => toast.info(`Detail event: ${evt.title}`)}
+                  className="px-2.5 py-1.5 rounded-xl bg-[var(--surface-2)] text-[var(--ink)] border border-[var(--line)] text-[11px] shrink-0 active:scale-95 transition-transform cursor-pointer"
+                >
+                  <span className="font-bold text-[var(--blue)]">{evt.time}</span> · {evt.title}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center gap-2.5 pt-3 border-t border-[var(--line)]">
@@ -282,7 +294,7 @@ export default function DashboardPage() {
       {/* Row 3: Pendapatan vs Biaya Area Chart (8) + Okupansi Gauge (4) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         <Card className="lg:col-span-8 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <div>
               <h3 className="text-base font-semibold text-[var(--ink)]">
                 Pendapatan vs Biaya Operasional
@@ -291,7 +303,7 @@ export default function DashboardPage() {
                 12 bulan kalender terakhir (Basis Accrual)
               </p>
             </div>
-            <div className="flex items-center gap-3 text-xs text-[var(--muted)]">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--muted)]">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-[var(--blue)]" />
                 Pendapatan

@@ -131,28 +131,28 @@ export default function InvoicePage() {
       />
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--line)] shadow-xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--surface)] border border-[var(--line)] shadow-xs">
           <div className="text-xs text-[var(--muted)]">Belum Dibayar</div>
-          <div className="text-2xl font-bold text-[var(--ink)] tabular mt-1">
+          <div className="text-xl sm:text-2xl font-bold text-[var(--ink)] tabular mt-1">
             Rp 6.860.000
           </div>
         </div>
-        <div className="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--red)]/20 shadow-xs">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--surface)] border border-[var(--red)]/20 shadow-xs">
           <div className="text-xs text-[var(--red)] font-semibold">Lewat Jatuh Tempo</div>
-          <div className="text-2xl font-bold text-[var(--red)] tabular mt-1">
+          <div className="text-xl sm:text-2xl font-bold text-[var(--red)] tabular mt-1">
             Rp 3.430.000
           </div>
         </div>
-        <div className="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--line)] shadow-xs">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--surface)] border border-[var(--line)] shadow-xs">
           <div className="text-xs text-[var(--muted)]">Lunas Bulan Ini</div>
-          <div className="text-2xl font-bold text-[var(--green)] tabular mt-1">
+          <div className="text-xl sm:text-2xl font-bold text-[var(--green)] tabular mt-1">
             Rp 20.900.000
           </div>
         </div>
-        <div className="p-4 rounded-2xl bg-[var(--surface)] border border-[var(--line)] shadow-xs">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[var(--surface)] border border-[var(--line)] shadow-xs">
           <div className="text-xs text-[var(--muted)]">Draft Tersimpan</div>
-          <div className="text-2xl font-bold text-[var(--muted)] tabular mt-1">
+          <div className="text-xl sm:text-2xl font-bold text-[var(--muted)] tabular mt-1">
             0 Draft
           </div>
         </div>
@@ -160,73 +160,146 @@ export default function InvoicePage() {
 
       {/* Table */}
       <Card className="p-0 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nomor Invoice</TableHead>
-              <TableHead>Tamu</TableHead>
-              <TableHead>Unit</TableHead>
-              <TableHead>Tanggal Terbit</TableHead>
-              <TableHead>Jatuh Tempo</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead align="right">Total</TableHead>
-              <TableHead align="right">Sisa Tagihan</TableHead>
-              <TableHead align="right">Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {MOCK_INVOICES.map((inv) => (
-              <TableRow
-                key={inv.id}
-                className="cursor-pointer"
-                onClick={() => setSelectedInvoice(inv)}
-              >
-                <TableCell className="font-semibold text-[var(--blue)]">
-                  {inv.number}
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-[var(--ink)]">{inv.guestName}</div>
-                </TableCell>
-                <TableCell>
-                  <span className="font-medium">{inv.unitCode}</span> ({inv.unitType})
-                </TableCell>
-                <TableCell>{inv.issueDate}</TableCell>
-                <TableCell>
-                  <span className={inv.status === "OVERDUE" ? "text-[var(--red)] font-bold" : ""}>
-                    {inv.dueDate}
-                  </span>
-                </TableCell>
-                <TableCell>{getStatusChip(inv.status)}</TableCell>
-                <TableCell align="right" className="font-semibold tabular">
-                  {formatRupiah(inv.total)}
-                </TableCell>
-                <TableCell align="right" className="font-bold tabular">
-                  {formatRupiah(inv.total - inv.paid)}
-                </TableCell>
-                <TableCell align="right" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex items-center justify-end gap-1.5">
-                    <a
-                      href={generateWhatsAppLink(inv)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button size="sm" variant="outline">
-                        WhatsApp
-                      </Button>
-                    </a>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => toast.success(`Mengunduh PDF ${inv.number}`)}
-                    >
-                      PDF
-                    </Button>
-                  </div>
-                </TableCell>
+        {/* Desktop Table (hidden on mobile) */}
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nomor Invoice</TableHead>
+                <TableHead>Tamu</TableHead>
+                <TableHead>Unit</TableHead>
+                <TableHead>Tanggal Terbit</TableHead>
+                <TableHead>Jatuh Tempo</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead align="right">Total</TableHead>
+                <TableHead align="right">Sisa Tagihan</TableHead>
+                <TableHead align="right">Aksi</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {MOCK_INVOICES.map((inv) => (
+                <TableRow
+                  key={inv.id}
+                  className="cursor-pointer"
+                  onClick={() => setSelectedInvoice(inv)}
+                >
+                  <TableCell className="font-semibold text-[var(--blue)]">
+                    {inv.number}
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium text-[var(--ink)]">{inv.guestName}</div>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium">{inv.unitCode}</span> ({inv.unitType})
+                  </TableCell>
+                  <TableCell>{inv.issueDate}</TableCell>
+                  <TableCell>
+                    <span className={inv.status === "OVERDUE" ? "text-[var(--red)] font-bold" : ""}>
+                      {inv.dueDate}
+                    </span>
+                  </TableCell>
+                  <TableCell>{getStatusChip(inv.status)}</TableCell>
+                  <TableCell align="right" className="font-semibold tabular">
+                    {formatRupiah(inv.total)}
+                  </TableCell>
+                  <TableCell align="right" className="font-bold tabular">
+                    {formatRupiah(inv.total - inv.paid)}
+                  </TableCell>
+                  <TableCell align="right" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <a
+                        href={generateWhatsAppLink(inv)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button size="sm" variant="outline">
+                          WhatsApp
+                        </Button>
+                      </a>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => toast.success(`Mengunduh PDF ${inv.number}`)}
+                      >
+                        PDF
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Card List (visible on mobile only) */}
+        <div className="divide-y divide-[var(--line)] md:hidden">
+          {MOCK_INVOICES.map((inv) => (
+            <div
+              key={inv.id}
+              onClick={() => setSelectedInvoice(inv)}
+              className="p-4 space-y-2.5 active:bg-[var(--surface-2)] transition-colors cursor-pointer"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-semibold text-sm text-[var(--ink)]">
+                    {inv.guestName}
+                  </div>
+                  <div className="text-[11px] font-mono text-[var(--blue)]">
+                    {inv.number}
+                  </div>
+                </div>
+                <div>{getStatusChip(inv.status)}</div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--ink-2)]">
+                <span className="font-semibold px-2 py-0.5 rounded-md bg-[var(--surface-2)] text-[var(--ink)]">
+                  Unit {inv.unitCode} ({inv.unitType})
+                </span>
+                <span>•</span>
+                <span className={inv.status === "OVERDUE" ? "text-[var(--red)] font-semibold" : "text-[var(--muted)]"}>
+                  Jatuh tempo: {inv.dueDate}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-[var(--line)]">
+                <div>
+                  <div className="text-[10px] text-[var(--muted)]">Total Tagihan:</div>
+                  <div className="text-sm font-semibold tabular text-[var(--ink)]">
+                    {formatRupiah(inv.total)}
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-[10px] text-[var(--muted)]">Sisa:</div>
+                  <div className="text-sm font-bold tabular text-[var(--red)]">
+                    {formatRupiah(inv.total - inv.paid)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
+                <a
+                  href={generateWhatsAppLink(inv)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <Button size="sm" variant="outline" className="w-full justify-center">
+                    WhatsApp
+                  </Button>
+                </a>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="flex-1 justify-center"
+                  onClick={() => toast.success(`Mengunduh PDF ${inv.number}`)}
+                >
+                  PDF
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
       </Card>
 
       {/* Invoice Split Detail Sheet (§12.4 Preview A4) */}
