@@ -61,7 +61,7 @@ export function Segmented<T extends string = string>({
               "relative inline-flex items-center justify-center font-medium rounded-[var(--r-pill)] transition-colors duration-150 z-10 gap-1.5 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] shrink-0 whitespace-nowrap",
               itemSizeClasses[size],
               isActive
-                ? "text-[var(--ink)]"
+                ? "text-[var(--ink)] bg-[var(--surface-solid)] shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
                 : "text-[var(--muted)] hover:text-[var(--ink)]"
             )}
           >

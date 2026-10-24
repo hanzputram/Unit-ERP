@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 
 export interface SparklineProps {
@@ -41,26 +40,20 @@ export function Sparkline({
   return (
     <div className={cn("relative inline-block shrink-0", className)}>
       <svg width={width} height={height} className="overflow-visible">
-        <motion.path
+        <path
           d={pathD}
           fill="none"
           stroke={color}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
         />
         {lastPoint && (
-          <motion.circle
+          <circle
             cx={lastPoint.x}
             cy={lastPoint.y}
             r="3"
             fill={color}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.7, duration: 0.2 }}
           />
         )}
       </svg>

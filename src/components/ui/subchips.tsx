@@ -38,8 +38,8 @@ export function SubChips<T extends string = string>({
             className={cn(
               "relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--r-pill)] text-[13px] font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] shrink-0 whitespace-nowrap",
               isActive
-                ? "text-[var(--ink)]"
-                : "text-[var(--muted)] hover:text-[var(--ink)]"
+                ? "text-[var(--ink)] bg-[var(--surface-solid)] border border-[var(--line)] shadow-xs font-semibold"
+                : "text-[var(--muted)] hover:text-[var(--ink)] hover:bg-[var(--surface-2)]"
             )}
           >
             {isActive && (

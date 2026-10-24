@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
 import { formatRupiahCompact } from "@/lib/money";
 import { cn } from "@/lib/cn";
 
@@ -149,22 +148,15 @@ export function UnitGrid({
                 L{floorGroup.floor}
               </span>
               <div className="flex flex-wrap gap-1">
-                {floorGroup.units.map((unit, uIdx) => (
-                  <motion.button
+                {floorGroup.units.map((unit) => (
+                  <button
                     key={unit.id}
                     type="button"
-                    initial={{ scale: 0.6, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{
-                      delay: Math.min(0.4, uIdx * 0.008),
-                      duration: 0.2,
-                    }}
-                    whileHover={{ scale: 1.15 }}
+                    onClick={() => onUnitClick?.(unit)}
                     onMouseEnter={() => setHoveredUnit(unit)}
                     onMouseLeave={() => setHoveredUnit(null)}
-                    onClick={() => onUnitClick?.(unit)}
                     className={cn(
-                      "h-7 w-7 sm:h-6 sm:w-6 rounded-[5px] sm:rounded-[4px] border cursor-pointer transition-shadow shadow-xs relative flex items-center justify-center text-[9px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)] active:scale-95",
+                      "h-7 w-7 sm:h-6 sm:w-6 rounded-[5px] sm:rounded-[4px] border cursor-pointer transition-all duration-150 hover:scale-115 active:scale-95 shadow-xs relative flex items-center justify-center text-[9px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[var(--blue)]",
                       getStatusClasses(unit.status)
                     )}
                     aria-label={`Unit ${unit.code}: ${unit.status}`}

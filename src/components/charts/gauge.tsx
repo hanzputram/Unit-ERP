@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { springSoft } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 
 export interface GaugeProps {
@@ -109,16 +107,15 @@ export function Gauge({
           />
 
           {/* Value Arc (Vibrant Lime per Reference) */}
-          <motion.path
+          <path
             d={trackPath}
             fill="none"
-            stroke="var(--lime)"
+            stroke="var(--lime, #84cc16)"
             strokeWidth={strokeWidth}
             strokeLinecap="round"
             strokeDasharray={`${totalArcLength} ${totalArcLength}`}
-            initial={{ strokeDashoffset: totalArcLength }}
-            animate={{ strokeDashoffset: totalArcLength - activeArcLength }}
-            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            strokeDashoffset={totalArcLength - activeArcLength}
+            className="transition-[stroke-dashoffset] duration-700 ease-out"
           />
 
           {/* Radial Ticks */}
@@ -142,13 +139,12 @@ export function Gauge({
           })}
 
           {/* Needle Layer with Rotation from the Exact Center Hub */}
-          <motion.g
+          <g
             style={{
+              transform: `rotate(${targetNeedleAngle}deg)`,
               transformOrigin: `${cx}px ${cy}px`,
+              transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
-            initial={{ rotate: startAngle }}
-            animate={{ rotate: targetNeedleAngle }}
-            transition={springSoft}
           >
             {/* Sleek Tapered Pointer Needle */}
             <line
@@ -160,7 +156,7 @@ export function Gauge({
               strokeWidth="2.5"
               strokeLinecap="round"
             />
-          </motion.g>
+          </g>
 
           {/* Center Hub: Donut Ring Matching Video */}
           <circle
@@ -181,14 +177,9 @@ export function Gauge({
 
         {/* Big Number and Label positioned cleanly in the bottom opening */}
         <div className="absolute left-0 right-0 top-[125px] flex flex-col items-center justify-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 3 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
-            className="text-3xl font-bold tracking-tight text-[var(--ink)] tabular leading-none"
-          >
+          <div className="text-3xl font-bold tracking-tight text-[var(--ink)] tabular leading-none">
             {clamped}%
-          </motion.div>
+          </div>
           <div className="text-xs text-[var(--muted)] font-medium mt-1">
             {label}
           </div>

@@ -47,7 +47,8 @@ export default function RootLayout({
 
           {/* Toast notifications */}
           <Toaster
-            position="bottom-left"
+            position="top-center"
+            richColors
             toastOptions={{
               className:
                 "rounded-[16px] bg-[var(--surface-solid)] text-[var(--ink)] border border-[var(--line)] shadow-xl",

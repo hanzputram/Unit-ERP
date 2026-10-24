@@ -63,68 +63,86 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 export function AreaChart({ data, height = 240, className }: AreaChartProps) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <div className={cn("w-full select-none", className)} style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <RechartsAreaChart
-          data={data}
-          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+    <div
+      className={cn("w-full select-none", className)}
+      style={{ height, minHeight: height }}
+    >
+      {mounted ? (
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={height}>
+          <RechartsAreaChart
+            data={data}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#2563eb" stopOpacity={0.28} />
+                <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
+              </linearGradient>
+            </defs>
+
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="var(--line, #e2e8f0)"
+            />
+
+            <XAxis
+              dataKey="month"
+              stroke="#64748b"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+            />
+
+            <YAxis
+              stroke="#64748b"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(val) => formatRupiahCompact(val)}
+              ticks={[0, 100_000_000, 200_000_000]}
+            />
+
+            <Tooltip content={<CustomTooltip />} />
+
+            {/* Secondary Series: Cost (dashed line, no fill) */}
+            <Area
+              type="monotone"
+              dataKey="cost"
+              stroke="#94a3b8"
+              strokeWidth={1.75}
+              strokeDasharray="4 4"
+              fill="none"
+              isAnimationActive={false}
+            />
+
+            {/* Primary Series: Revenue (smooth blue line + soft gradient) */}
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              stroke="#2563eb"
+              strokeWidth={2.5}
+              fillOpacity={1}
+              fill="url(#revenueGradient)"
+              isAnimationActive={false}
+            />
+          </RechartsAreaChart>
+        </ResponsiveContainer>
+      ) : (
+        <div
+          className="w-full h-full flex items-center justify-center text-xs text-[var(--muted)] animate-pulse rounded-lg bg-[var(--surface-2)]/30"
+          style={{ height }}
         >
-          <defs>
-            <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--blue)" stopOpacity={0.28} />
-              <stop offset="95%" stopColor="var(--blue)" stopOpacity={0.0} />
-            </linearGradient>
-          </defs>
-
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="var(--line)"
-          />
-
-          <XAxis
-            dataKey="month"
-            stroke="var(--muted)"
-            fontSize={11}
-            tickLine={false}
-            axisLine={false}
-          />
-
-          <YAxis
-            stroke="var(--muted)"
-            fontSize={11}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(val) => formatRupiahCompact(val)}
-            ticks={[0, 100_000_000, 200_000_000]}
-          />
-
-          <Tooltip content={<CustomTooltip />} />
-
-          {/* Secondary Series: Cost (dashed line, no fill) */}
-          <Area
-            type="monotone"
-            dataKey="cost"
-            stroke="var(--muted)"
-            strokeWidth={1.75}
-            strokeDasharray="4 4"
-            fill="none"
-            isAnimationActive={true}
-          />
-
-          {/* Primary Series: Revenue (smooth blue line + soft gradient) */}
-          <Area
-            type="monotone"
-            dataKey="revenue"
-            stroke="var(--blue)"
-            strokeWidth={2.5}
-            fillOpacity={1}
-            fill="url(#revenueGradient)"
-            isAnimationActive={true}
-          />
-        </RechartsAreaChart>
-      </ResponsiveContainer>
+          Memuat grafik...
+        </div>
+      )}
     </div>
   );
 }
