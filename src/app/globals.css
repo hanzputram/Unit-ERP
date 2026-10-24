@@ -116,3 +116,12 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+/* Sembunyikan floating Next.js dev indicator badge */
+nextjs-portal,
+[data-nextjs-dev-indicator],
+[data-nextjs-portal] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
