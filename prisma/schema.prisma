@@ -1,0 +1,580 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ───────── ENUM ─────────
+enum Role {
+  OWNER
+  MANAGER
+  FRONT_DESK
+  FINANCE
+  HOUSEKEEPING
+}
+
+enum RentalType {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum BookingStatus {
+  HOLD
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+}
+
+enum Channel {
+  DIRECT
+  WALK_IN
+  WHATSAPP
+  AIRBNB
+  BOOKING_COM
+  TRAVELOKA
+  AGODA
+  AGENT
+  OTHER
+}
+
+enum BillingMode {
+  UPFRONT
+  PER_CYCLE
+}
+
+enum HkStatus {
+  CLEAN
+  DIRTY
+  IN_PROGRESS
+  INSPECT
+}
+
+enum BlockReason {
+  MAINTENANCE
+  OWNER_USE
+  RENOVATION
+  OTHER
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PARTIAL
+  PAID
+  OVERDUE
+  VOID
+}
+
+enum InvoiceKind {
+  BOOKING
+  CYCLE
+  EXTENSION
+  DEPOSIT
+  SETTLEMENT
+  MANUAL
+}
+
+enum ItemKind {
+  RENT
+  DEPOSIT
+  CLEANING_FEE
+  EXTRA_GUEST
+  LATE_CHECKOUT
+  UTILITY
+  DAMAGE
+  DISCOUNT
+  TAX
+  SERVICE
+  OTHER
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  QRIS
+  CARD
+  EWALLET
+  OTHER
+}
+
+enum PaymentType {
+  PAYMENT
+  REFUND
+}
+
+enum DepositEntryType {
+  RECEIVED
+  DEDUCTED
+  REFUNDED
+  FORFEITED
+}
+
+enum ExpenseKind {
+  OPERATING
+  CAPEX
+  COMMISSION
+  TAX
+  OTHER
+}
+
+enum TaskType {
+  TURNOVER
+  DEEP_CLEAN
+  INSPECTION
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum IdType {
+  KTP
+  PASSPORT
+  SIM
+  KITAS
+  OTHER
+}
+
+// ───────── ORGANISASI & USER ─────────
+model Organization {
+  id                String            @id @default(cuid())
+  name              String
+  properties        Property[]
+  members           Membership[]
+  guests            Guest[]
+  expenseCategories ExpenseCategory[]
+  createdAt         DateTime          @default(now())
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String
+  passwordHash String?
+  avatarColor  String? // untuk avatar inisial "NH"
+  memberships  Membership[]
+  createdAt    DateTime     @default(now())
+}
+
+model Membership {
+  id          String   @id @default(cuid())
+  userId      String
+  orgId       String
+  role        Role
+  propertyIds String[] @default([]) // kosong = semua properti
+  user        User     @relation(fields: [userId], references: [id])
+  org         Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([userId, orgId])
+}
+
+// ───────── PROPERTI, GEDUNG, TIPE, UNIT ─────────
+model Property {
+  id                    String    @id @default(cuid())
+  orgId                 String
+  code                  String // 3 huruf, dipakai di nomor invoice & booking, mis. "SKY"
+  name                  String
+  address               String?
+  city                  String?
+  timezone              String    @default("Asia/Jakarta")
+  checkInTime           String    @default("14:00")
+  checkOutTime          String    @default("12:00")
+  lateGraceMinutes      Int       @default(60)
+  lateHourlyFeePct      Int       @default(10) // % dari tarif harian per jam setelah grace; 100% maks
+  electricityRate       Int? // Rp per kWh (null = tidak ditagihkan)
+  waterRate             Int? // Rp per m³ (null = tidak ditagihkan)
+  lostKeyFee            Int? // biaya penggantian kunci/kartu
+  taxRateBp             Int       @default(0) // basis point: 1100 = 11%. 0 = tanpa pajak
+  taxLabel              String    @default("PPN")
+  taxInclusive          Boolean   @default(false)
+  defaultDownPaymentPct Int       @default(0) // 0 = bayar penuh sebelum check-in
+  holdExpiryHours       Int       @default(24)
+  cancellationRules     Json      @default("[]") // [{daysBefore:3,refundPct:100},{daysBefore:1,refundPct:50},{daysBefore:0,refundPct:0}]
+  invoicePrefix         String    @default("INV")
+  invoiceDueDays        Int       @default(3)
+  invoiceFooter         String?
+  invoiceTerms          String?
+  bankAccounts          Json      @default("[]") // [{bank:"BCA",number:"123",holder:"PT ..."}]
+  qrisImageUrl          String?
+  logoUrl               String?
+  phone                 String?
+  org                   Organization @relation(fields: [orgId], references: [id])
+  buildings             Building[]
+  unitTypes             UnitType[]
+  units                 Unit[]
+  bookings              Booking[]
+  invoices              Invoice[]
+  payments              Payment[]
+  expenses              Expense[]
+
+  @@unique([orgId, code])
+}
+
+model Building {
+  id         String   @id @default(cuid())
+  propertyId String
+  name       String // "Tower A"
+  floors     Int
+  property   Property @relation(fields: [propertyId], references: [id])
+  units      Unit[]
+}
+
+model UnitType {
+  id            String   @id @default(cuid())
+  propertyId    String
+  name          String // "Studio", "1 BR", "2 BR"
+  bedrooms      Int      @default(0)
+  maxGuests     Int      @default(2)
+  sizeSqm       Int?
+  amenities     String[] @default([])
+  dailyRate     Int?
+  weeklyRate    Int?
+  monthlyRate   Int?
+  depositAmount Int?
+  cleaningFee   Int?
+  extraGuestFee Int?
+  property      Property @relation(fields: [propertyId], references: [id])
+  units         Unit[]
+}
+
+model Unit {
+  id            String            @id @default(cuid())
+  propertyId    String
+  buildingId    String?
+  typeId        String
+  code          String // "A-1203"
+  floor         Int?
+  dailyRate     Int?
+  weeklyRate    Int?
+  monthlyRate   Int?
+  depositAmount Int?
+  cleaningFee   Int?
+  hkStatus      HkStatus          @default(CLEAN)
+  photos        String[]          @default([])
+  notes         String?
+  icalToken     String            @default(cuid())
+  archivedAt    DateTime?
+  property      Property          @relation(fields: [propertyId], references: [id])
+  building      Building?         @relation(fields: [buildingId], references: [id])
+  type          UnitType          @relation(fields: [typeId], references: [id])
+  bookings      Booking[]
+  blocks        UnitBlock[]
+  expenses      Expense[]
+  tasks         HousekeepingTask[]
+
+  @@unique([propertyId, code])
+  @@index([propertyId, buildingId, floor])
+}
+
+model UnitBlock {
+  id          String      @id @default(cuid())
+  unitId      String
+  startDate   DateTime    @db.Date
+  endDate     DateTime    @db.Date // eksklusif
+  reason      BlockReason
+  note        String?
+  createdById String?
+  unit        Unit        @relation(fields: [unitId], references: [id])
+
+  @@index([unitId, startDate, endDate])
+}
+
+// ───────── TAMU ─────────
+model Guest {
+  id              String       @id @default(cuid())
+  orgId           String
+  fullName        String
+  phone           String? // simpan format E.164: +628...
+  email           String?
+  idType          IdType?
+  idNumberEnc     String? // terenkripsi
+  idLast4         String? // untuk tampilan "••••1234"
+  idPhotoUrl      String?
+  nationality     String?
+  birthDate       DateTime?    @db.Date
+  address         String?
+  notes           String?
+  tags            String[]     @default([])
+  blacklisted     Boolean      @default(false)
+  blacklistReason String?
+  archivedAt      DateTime?
+  org             Organization @relation(fields: [orgId], references: [id])
+  bookings        Booking[]
+
+  @@index([orgId, fullName])
+  @@index([orgId, phone])
+}
+
+// ───────── BOOKING & STAY ─────────
+model Booking {
+  id                   String             @id @default(cuid())
+  code                 String             @unique // BK-SKY-2610-0001
+  propertyId           String
+  unitId               String
+  guestId              String
+  channel              Channel            @default(DIRECT)
+  externalRef          String? // UID iCal / kode OTA
+  status               BookingStatus      @default(CONFIRMED)
+  holdExpiresAt        DateTime?
+  rentalType           RentalType
+  periods              Int // jumlah hari/minggu/bulan
+  checkInDate          DateTime           @db.Date
+  checkOutDate         DateTime           @db.Date // EKSKLUSIF
+  nights               Int
+  adults               Int                @default(1)
+  children             Int                @default(0)
+  rentSubtotal         Int
+  discountTotal        Int                @default(0)
+  extrasTotal          Int                @default(0)
+  taxTotal             Int                @default(0)
+  grandTotal           Int
+  depositRequired      Int                @default(0)
+  downPaymentRequired  Int                @default(0)
+  billingMode          BillingMode        @default(UPFRONT)
+  quoteSnapshot        Json
+  notes                String?
+  cancelledAt          DateTime?
+  cancelReason         String?
+  actualCheckInAt      DateTime?
+  actualCheckOutAt     DateTime?
+  createdById          String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  property             Property           @relation(fields: [propertyId], references: [id])
+  unit                 Unit               @relation(fields: [unitId], references: [id])
+  guest                Guest              @relation(fields: [guestId], references: [id])
+  stay                 StayRecord?
+  invoices             Invoice[]
+  payments             Payment[]
+  deposits             DepositEntry[]
+  tasks                HousekeepingTask[]
+
+  @@index([propertyId, status, checkInDate])
+  @@index([unitId, checkInDate, checkOutDate])
+  @@index([guestId])
+}
+
+model StayRecord {
+  id                  String   @id @default(cuid())
+  bookingId           String   @unique
+  idVerified          Boolean  @default(false)
+  keysIssued          Int      @default(0)
+  accessCardsIssued   Int      @default(0)
+  meterElecStart      Int?
+  meterWaterStart     Int?
+  inChecklist         Json?
+  inPhotos            String[] @default([])
+  signatureInUrl      String?
+  checkedInById       String?
+  meterElecEnd        Int?
+  meterWaterEnd       Int?
+  outChecklist        Json?
+  outPhotos           String[] @default([])
+  damageNotes         String?
+  keysReturned        Int?
+  accessCardsReturned Int?
+  lateMinutes         Int      @default(0)
+  signatureOutUrl     String?
+  checkedOutById      String?
+  booking             Booking  @relation(fields: [bookingId], references: [id])
+}
+
+// ───────── INVOICE, ITEM, PAYMENT ─────────
+model Invoice {
+  id            String              @id @default(cuid())
+  number        String              @unique // INV/SKY/202610/0001
+  propertyId    String
+  bookingId     String?
+  guestId       String?
+  kind          InvoiceKind
+  status        InvoiceStatus       @default(DRAFT)
+  issueDate     DateTime            @db.Date
+  dueDate       DateTime            @db.Date
+  periodStart   DateTime?           @db.Date
+  periodEnd     DateTime?           @db.Date
+  subtotal      Int
+  discountTotal Int                 @default(0)
+  taxTotal      Int                 @default(0)
+  total         Int
+  amountPaid    Int                 @default(0)
+  notes         String?
+  publicToken   String              @unique @default(cuid())
+  sentAt        DateTime?
+  voidedAt      DateTime?
+  voidReason    String?
+  createdById   String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  property      Property            @relation(fields: [propertyId], references: [id])
+  booking       Booking?            @relation(fields: [bookingId], references: [id])
+  items         InvoiceItem[]
+  allocations   PaymentAllocation[]
+  messages      MessageLog[]
+
+  @@unique([bookingId, kind, periodStart])
+  @@index([propertyId, status, dueDate])
+  @@index([bookingId])
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  kind        ItemKind
+  description String
+  qty         Int      @default(1)
+  unitPrice   Int
+  amount      Int
+  taxable     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  meta        Json?
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id             String              @id @default(cuid())
+  propertyId     String
+  bookingId      String?
+  type           PaymentType         @default(PAYMENT)
+  method         PaymentMethod
+  amount         Int
+  paidAt         DateTime
+  reference      String?
+  proofUrl       String?
+  note           String?
+  receiptNo      String?             @unique
+  idempotencyKey String?             @unique
+  receivedById   String?
+  createdAt      DateTime            @default(now())
+  property       Property            @relation(fields: [propertyId], references: [id])
+  booking        Booking?            @relation(fields: [bookingId], references: [id])
+  allocations    PaymentAllocation[]
+
+  @@index([propertyId, paidAt])
+}
+
+model PaymentAllocation {
+  id        String   @id @default(cuid())
+  paymentId String
+  invoiceId String
+  amount    Int
+  payment   Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+
+  @@unique([paymentId, invoiceId])
+}
+
+model DepositEntry {
+  id        String           @id @default(cuid())
+  bookingId String
+  type      DepositEntryType
+  amount    Int
+  note      String?
+  paymentId String?
+  createdAt DateTime         @default(now())
+  booking   Booking          @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
+}
+
+// ───────── PENGELUARAN ─────────
+model ExpenseCategory {
+  id         String        @id @default(cuid())
+  orgId      String
+  name       String
+  kind       ExpenseKind   @default(OPERATING)
+  color      String        @default("#8A8A8F")
+  archivedAt DateTime?
+  org        Organization  @relation(fields: [orgId], references: [id])
+  expenses   Expense[]
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  propertyId  String
+  unitId      String?
+  categoryId  String
+  vendor      String?
+  description String
+  amount      Int
+  spentAt     DateTime        @db.Date
+  method      PaymentMethod   @default(CASH)
+  receiptUrl  String?
+  createdById String?
+  createdAt   DateTime        @default(now())
+  property    Property        @relation(fields: [propertyId], references: [id])
+  unit        Unit?           @relation(fields: [unitId], references: [id])
+  category    ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([propertyId, spentAt])
+}
+
+// ───────── HOUSEKEEPING, LOG, COUNTER ─────────
+model HousekeepingTask {
+  id           String     @id @default(cuid())
+  unitId       String
+  bookingId    String?
+  type         TaskType   @default(TURNOVER)
+  status       TaskStatus @default(OPEN)
+  assignedToId String?
+  dueAt        DateTime?
+  doneAt       DateTime?
+  doneById     String?
+  notes        String?
+  unit         Unit       @relation(fields: [unitId], references: [id])
+  booking      Booking?   @relation(fields: [bookingId], references: [id])
+
+  @@index([unitId, status])
+}
+
+model MessageLog {
+  id        String   @id @default(cuid())
+  invoiceId String?
+  bookingId String?
+  channel   String
+  to        String
+  template  String
+  status    String
+  error     String?
+  sentAt    DateTime @default(now())
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+}
+
+model Counter {
+  key   String @id
+  value Int    @default(0)
+}
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  orgId    String
+  userId   String?
+  entity   String
+  entityId String
+  action   String
+  diff     Json?
+  at       DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([orgId, at])
+}
+
+model RateOverride {
+  id         String    @id @default(cuid())
+  unitTypeId String?
+  unitId     String?
+  startDate  DateTime  @db.Date
+  endDate    DateTime  @db.Date
+  dailyRate  Int
+  minNights  Int       @default(1)
+  label      String?
+}

@@ -1,26 +1,118 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Permukaan */
+  --bg: #F1F1EF;
+  --bg-glow: radial-gradient(1200px 600px at 20% -10%, #FFFFFF 0%, transparent 60%);
+  --surface: rgba(255, 255, 255, 0.80);
+  --surface-solid: #FFFFFF;
+  --surface-2: #F6F6F4;
+  --line: rgba(13, 13, 15, 0.07);
+
+  /* Teks */
+  --ink: #0D0D0F;
+  --ink-2: #4A4A52;
+  --muted: #8C8C93;
+
+  /* Kartu KPI #1 (hero hitam) & #2 (biru pastel) */
+  --kpi1-bg: #0D0D0F;
+  --kpi1-fg: #FFFFFF;
+  --kpi2-bg: #BCD2F3;
+  --kpi2-fg: #16315F;
+
+  /* Aksen Semantik */
+  --blue: #3F6FD9;
+  --blue-soft: #E3ECFB;
+  --orange: #E2552B;
+  --orange-soft: #FCE6DE;
+  --lime: #8CB93B;
+  --green: #2E9D5B;
+  --green-soft: #E3F3E8;
+  --amber: #E8A91A;
+  --amber-soft: #FBF0CF;
+  --red: #D8392B;
+  --red-soft: #FBE4E1;
+  --mint: #CDEBDD;
+
+  /* Radius */
+  --r-xl: 28px;
+  --r-lg: 24px;
+  --r-md: 16px;
+  --r-sm: 10px;
+  --r-xs: 4px;
+  --r-pill: 999px;
+
+  /* Bayangan Berlapis */
+  --shadow-card: 0 1px 1px rgba(13, 13, 15, 0.03), 0 4px 12px rgba(13, 13, 15, 0.04), 0 24px 48px -12px rgba(13, 13, 15, 0.06);
+  --shadow-float: 0 8px 24px rgba(13, 13, 15, 0.18), 0 2px 6px rgba(13, 13, 15, 0.12);
+
+  /* Animasi */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 500ms;
+  --dur-chart: 900ms;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root[data-theme="dark"],
+.dark {
+  --bg: #09090A;
+  --bg-glow: radial-gradient(1000px 500px at 20% -10%, #17171B 0%, transparent 60%);
+  --surface: rgba(24, 24, 27, 0.72);
+  --surface-solid: #151518;
+  --surface-2: #1D1D21;
+  --line: rgba(255, 255, 255, 0.08);
+  --ink: #F4F4F5;
+  --ink-2: #B9B9C0;
+  --muted: #7F7F88;
+  --kpi1-bg: #F6F6F4;
+  --kpi1-fg: #0D0D0F; /* INVERSI di dark mode: putih bertulisan hitam */
+  --kpi2-bg: #1E4A82;
+  --kpi2-fg: #EAF1FF;
+  --blue: #5B8CF0;
+  --blue-soft: rgba(91, 140, 240, 0.16);
+  --orange: #F0693F;
+  --orange-soft: rgba(240, 105, 63, 0.16);
+  --amber: #F0B83A;
+  --amber-soft: rgba(240, 184, 58, 0.16);
+  --green: #46C27A;
+  --green-soft: rgba(70, 194, 122, 0.16);
+  --red: #F0594B;
+  --red-soft: rgba(240, 89, 75, 0.16);
+  --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-float: 0 8px 28px rgba(0, 0, 0, 0.6);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  background-image: var(--bg-glow);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-outfit), var(--font-inter), system-ui, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular numbers for clean numeric alignments and counter animations */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: var(--r-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
